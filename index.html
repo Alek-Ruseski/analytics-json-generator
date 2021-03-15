@@ -1,11 +1,170 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="en">
+<head>
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<!-- Bootstrap CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
+	<title>Hello, world!</title>
+</head>
 <body>
+	<h1>Hello, world!</h1>
 
-<h1>My First Heading</h1>
-<p>My first paragraph.</p>
+	<div class="container">
+		<form id="myForm">
 
-<div "template"></div>
 
-</body>
-</html>
+
+			<div class="form-group row">
+
+				<label for="AB_TestName" class="col-sm-3 col-form-label">AB Test Name</label>
+				<div class="col-sm-9">
+					<input type="text" class="form-control" id="ABTestName" name="AB_TestName" placeholder="AB test name">
+				</div>
+			</div>
+
+
+			<div class="form-group" id="parameterList">
+
+				
+			</div>
+
+
+			
+
+			<button class="btn btn-primary mb-2" id="generateJson">Generate json file</button>
+			<button  class="btn btn-primary mb-2" id="addParamButton">Add new parameter</button>
+
+
+
+		</form>
+		<!-- template parameter -->
+		<!-- <div class="form-row d-none" > -->
+			<form class="form-row d-none" id="template-parameter">
+				<div class="form-group mb-2">
+					<label for="parameterName" >Name</label>
+					<input type="text" class="form-control" id="parameterName" name="parameterName" placeholder="Parameter name">
+				</div>
+				<div class="form-group mx-3 mb-2">
+					<label for="parameterValue">Value</label>
+					<input type="text" class="form-control" id="parameterValue" name="parameterValue" placeholder="Parameter value">
+				</div>
+				<div class="form-group col-2">
+					<label for="parameterValueType">Type</label>
+					<select  name="parameterValueType" class="form-control">
+						<option value="bool">Bool</option>
+						<option value="int">Integer</option>
+						<option value="string" selected="">String</option>
+						<option value="float">Float</option>
+					</select>
+				</div>
+			</form>
+
+
+			<!-- </div> -->
+		</div>
+
+		<!-- Optional JavaScript -->
+		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	</body>
+	<script>
+		var myModule = (function () {
+			var textFile = null,
+			  makeTextFile = function (text) {
+			    var data = new Blob([text], {type: 'text/plain'});
+
+			    // If we are replacing a previously generated file we need to
+			    // manually revoke the object URL to avoid memory leaks.
+			    if (textFile !== null) {
+			      window.URL.revokeObjectURL(textFile);
+			    }
+
+			    textFile = window.URL.createObjectURL(data);
+
+			    return textFile;
+			  };
+
+			  return {
+			  	makeTextFile,
+			  	textFile
+			  }
+			})();
+
+
+		$( document ).ready(function() {
+			console.log( "ready!" );
+
+			$("#addParamButton").click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
+
+				console.log( "added a parameter field!" );
+
+				$("[id=template-parameter]").clone(true).appendTo('#parameterList').removeClass('d-none').attr('id', '');
+			});
+
+			$("#generateJson").click(function(event) {
+				event.stopPropagation();
+				event.preventDefault();
+
+				console.log( "generating a json!" );
+
+				var jsonData = {};
+
+				// first record of json is name of test
+				var formData = $("#myForm").serializeArray();
+				console.log(formData);
+				var testName = formData.pop();
+				jsonData[testName.name] = testName.value;
+				console.log(jsonData);
+
+				// conversion function
+				const reducer = (accumulator, currentvalue) => {
+					return accumulator[Object.keys(currentvalue)[0]];
+				}
+
+				// now fetch individual parameters
+				jsonData["parameterList"] = [];
+				$('#parameterList').children('form').each(function(index, el) {
+					var paramAsAnArray = $(el).serializeArray();
+					// formData.push($(el).serializeArray());
+					// console.log(formData);
+					console.log(paramAsAnArray);
+
+					var paramAsAnObj = paramAsAnArray.reduce(
+						(obj, item) => Object.assign(obj, { [item.name]: item.value }), {});
+					console.log(paramAsAnObj);
+
+					jsonData["parameterList"].push(paramAsAnObj);
+				});
+				console.log(jsonData);
+				var jsonString = JSON.stringify(jsonData, null, 2);
+				console.log(jsonString);
+
+				// perform validation
+
+				// generate json file
+		    var link = document.createElement('a');
+		    link.setAttribute('download', testName.value != "" ? testName.value : "test");
+		    link.href = myModule.makeTextFile(jsonString);
+		    document.body.appendChild(link);
+
+		    // wait for the link to be added to the document
+		    window.requestAnimationFrame(function () {
+		      var event = new MouseEvent('click');
+		      link.dispatchEvent(event);
+		      document.body.removeChild(link);
+				});
+
+		  });
+
+		});
+	</script>
+	</html>
