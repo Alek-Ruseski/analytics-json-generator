@@ -9,41 +9,45 @@
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 
-	<title>Hello, world!</title>
+	<title>Json Generator</title>
 </head>
 <body>
-	<h1>Hello, world!</h1>
+	<h1 class="text-center ">Firebase Config JSON Generator</h1>
 
 	<div class="container">
 		<form id="myForm">
-
 
 
 			<div class="form-group row">
 
 				<label for="AB_TestName" class="col-sm-3 col-form-label">AB Test Name</label>
 				<div class="col-sm-9">
-					<input type="text" class="form-control" id="ABTestName" name="AB_TestName" placeholder="AB test name">
+					<input type="text" class="form-control" id="ABTestName" name="AB_TestName" placeholder="ExampleTest">
 				</div>
 			</div>
 
 
-			<div class="form-group" id="parameterList">
+			<div class="form-group mb-2" id="parameterList">
 
 				
 			</div>
 
 
-			
-
-			<button class="btn btn-primary mb-2" id="generateJson">Generate json file</button>
-			<button  class="btn btn-primary mb-2" id="addParamButton">Add new parameter</button>
-
+			<button class="btn btn-primary mb-3" id="generateJson">Generate json</button>
+			<button  class="btn btn-primary mb-3" id="addParamButton">Add new parameter</button>
 
 
 		</form>
+
+	
+		<textarea class="container" name="jsonExample" id="jsonExample" placeholder="Click the generate json button to see the json..." readonly rows="10"></textarea>
+<div class="text-right">
+		<button class="btn btn-primary mb-3 text-right" id="saveFile">Save json to file</button>
+</div>
+
+
+
 		<!-- template parameter -->
-		<!-- <div class="form-row d-none" > -->
 			<form class="form-row d-none" id="template-parameter">
 				<div class="form-group mb-2">
 					<label for="parameterName" >Name</label>
@@ -62,10 +66,12 @@
 						<option value="float">Float</option>
 					</select>
 				</div>
+
+					<button type="button" class="close ml-4" aria-label="Close" name="delete" >
+					  <span aria-hidden="true">&times;</span>
+					</button>
+
 			</form>
-
-
-			<!-- </div> -->
 		</div>
 
 		<!-- Optional JavaScript -->
@@ -75,6 +81,8 @@
 		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 	</body>
 	<script>
+		let jsonText;
+		let fileName = "TestExample";
 		var myModule = (function () {
 			var textFile = null,
 			  makeTextFile = function (text) {
@@ -107,12 +115,20 @@
 
 				console.log( "added a parameter field!" );
 
-				$("[id=template-parameter]").clone(true).appendTo('#parameterList').removeClass('d-none').attr('id', '');
+				var newParam = $("[id=template-parameter]").clone(true).appendTo('#parameterList').removeClass('d-none').attr('id', '');
+				newParam.children('[name=delete]').click(function(event) {
+					event.stopPropagation();
+					event.preventDefault();
+
+					newParam.remove();
+				});
 			});
 
 			$("#generateJson").click(function(event) {
 				event.stopPropagation();
 				event.preventDefault();
+
+				jsonText="";
 
 				console.log( "generating a json!" );
 
@@ -148,22 +164,32 @@
 				var jsonString = JSON.stringify(jsonData, null, 2);
 				console.log(jsonString);
 
+
+				// show in text area
+				$(jsonExample).val(jsonString);
+				
+				jsonText = jsonString;
+				fileName = testName.value != "" ? testName.value : "test";
 				// perform validation
 
-				// generate json file
-		    var link = document.createElement('a');
-		    link.setAttribute('download', testName.value != "" ? testName.value : "test");
-		    link.href = myModule.makeTextFile(jsonString);
-		    document.body.appendChild(link);
 
-		    // wait for the link to be added to the document
-		    window.requestAnimationFrame(function () {
-		      var event = new MouseEvent('click');
-		      link.dispatchEvent(event);
-		      document.body.removeChild(link);
-				});
 
 		  });
+				// generate json file
+
+		   $("#saveFile").click(function(event) {
+		   	    var link = document.createElement('a');
+		   	    link.setAttribute('download', fileName);
+		   	    link.href = myModule.makeTextFile(jsonText);
+		   	    document.body.appendChild(link);
+
+		   	    // wait for the link to be added to the document
+		   	    window.requestAnimationFrame(function () {
+		   	      var event = new MouseEvent('click');
+		   	      link.dispatchEvent(event);
+		   	      document.body.removeChild(link);
+		   			});
+		   });
 
 		});
 	</script>
