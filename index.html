@@ -15,18 +15,35 @@
 	<h1 class="text-center ">Firebase Config JSON Generator</h1>
 
 	<div class="container">
-		<form id="myForm">
+		<div id="myForm">
 
 
 			<div class="form-group row">
 
 				<label for="AB_TestName" class="col-sm-2 col-form-label">AB Test Name</label>
 				<div class="col-sm-9">
-					<input type="text" class="form-control" id="ABTestName" name="AB_TestName" placeholder="ExampleTest">
+					<input type="text" class="form-control" id="AB_TestName" name="AB_TestName" placeholder="ExampleTest">
 				</div>
 			</div>
 
 			<button  class="btn btn-primary mb-3" id="addParamButton">Add new parameter</button>
+
+			<!-- labels -->
+			<div class="form-group mb-0 d-none" id="parameterLabels">
+
+				<form class="form-row">
+					<div class="form-group col-3 mb-2">
+						<label for="parameterName" >Name</label>
+					</div>
+					<div class="form-group col-3 mx-3 mb-2">
+						<label for="parameterValue">Value</label>
+					</div>
+					<div class="form-group col-2">
+						<label for="parameterValueType">Type</label>
+					</div>
+
+				</form>
+			</div>
 
 			<div class="form-group mb-2" id="parameterList">
 
@@ -34,7 +51,7 @@
 			</div>
 
 			<button class="btn btn-primary mb-3" id="generateJson">Generate json</button>
-		</form>
+		</div>
 
 
 		<textarea class="w-100 overflow-auto" name="showArea" id="showArea" placeholder="Click the generate json button to see the json..." readonly rows="10"></textarea>
@@ -45,21 +62,21 @@
 
 		<!-- template parameter -->
 		<form class="form-row d-none" id="template-parameter">
-			<div class="form-group mb-2">
-				<label for="parameterName" >Name</label>
+			<div class="form-group col-3 mb-2">
+				<!-- <label for="parameterName" >Name</label> -->
 				<input type="text" class="form-control" id="parameterName" name="parameterName" placeholder="Parameter name">
 			</div>
-			<div class="form-group mx-3 mb-2">
-				<label for="parameterValue">Value</label>
+			<div class="form-group col-3 mx-3 mb-2">
+				<!-- <label for="parameterValue">Value</label> -->
 				<input type="text" class="form-control" id="parameterValue" name="parameterValue" placeholder="Parameter value">
 			</div>
 			<div class="form-group col-2">
-				<label for="parameterValueType">Type</label>
+				<!-- <label for="parameterValueType">Type</label> -->
 				<select  name="parameterValueType" class="form-control">
-					<option value="bool">Bool</option>
-					<option value="int">Integer</option>
-					<option value="string" selected="">String</option>
-					<option value="float">Float</option>
+					<option value="Bool">Bool</option>
+					<option value="Int">Integer</option>
+					<option value="String" selected="">String</option>
+					<option value="Float">Float</option>
 				</select>
 			</div>
 
@@ -126,13 +143,25 @@
 
 				console.log( "added a parameter field!" );
 
+				// add the new row and set it up
 				var newParam = $("[id=template-parameter]").clone(true).appendTo('#parameterList').removeClass('d-none').attr('id', '');
+
+				// functional delete button for row
 				newParam.children('[name=delete]').click(function(event) {
 					event.stopPropagation();
 					event.preventDefault();
 
 					newParam.remove();
+
+					// hide parameters labels if no parameters are shown
+					if($('#parameterList').children('form').length < 1){
+						$(parameterLabels).addClass("d-none");
+					}
 				});
+
+				// show parameter labels
+				$(parameterLabels).removeClass("d-none");
+
 			});
 
 			// generate the json string (formatted)
@@ -145,12 +174,11 @@
 				console.log( "Generating json!" );
 
 				var jsonData = {};
+				var testName = "";
 
 				// first record of json is name of test
-				var formData = $("#myForm").serializeArray();
-				console.log(formData);
-				var testName = formData.pop();
-				jsonData[testName.name] = testName.value;
+				testName = $("#AB_TestName").val();
+				jsonData[$("#AB_TestName").attr('name')] = $("#AB_TestName").val();
 				console.log(jsonData);
 
 				// conversion function
@@ -162,8 +190,6 @@
 				jsonData["parameterList"] = [];
 				$('#parameterList').children('form').each(function(index, el) {
 					var paramAsAnArray = $(el).serializeArray();
-					// formData.push($(el).serializeArray());
-					// console.log(formData);
 					console.log(paramAsAnArray);
 
 					var paramAsAnObj = paramAsAnArray.reduce(
