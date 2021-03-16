@@ -83,10 +83,11 @@
 	<script>
 		let jsonText;
 		let fileName = "TestExample";
-		var myModule = (function () {
+
+		var saveToFileModule = (function () {
 			var textFile = null,
 			  makeTextFile = function (text) {
-			    var data = new Blob([text], {type: 'text/plain'});
+			    var data = new Blob([text], {type: 'application/json'});
 
 			    // If we are replacing a previously generated file we need to
 			    // manually revoke the object URL to avoid memory leaks.
@@ -105,10 +106,11 @@
 			  }
 			})();
 
-
+		// 
 		$( document ).ready(function() {
 			console.log( "ready!" );
 
+			// add a new parameter field on click
 			$("#addParamButton").click(function(event) {
 				event.stopPropagation();
 				event.preventDefault();
@@ -124,13 +126,14 @@
 				});
 			});
 
+			// generate the json string (formatted)
 			$("#generateJson").click(function(event) {
 				event.stopPropagation();
 				event.preventDefault();
 
 				jsonText="";
 
-				console.log( "generating a json!" );
+				console.log( "Generating json!" );
 
 				var jsonData = {};
 
@@ -156,13 +159,13 @@
 
 					var paramAsAnObj = paramAsAnArray.reduce(
 						(obj, item) => Object.assign(obj, { [item.name]: item.value }), {});
-					console.log(paramAsAnObj);
+					// console.log(paramAsAnObj);
 
 					jsonData["parameterList"].push(paramAsAnObj);
 				});
-				console.log(jsonData);
+				// console.log(jsonData);
 				var jsonString = JSON.stringify(jsonData, null, 2);
-				console.log(jsonString);
+				// console.log(jsonString);
 
 
 				// show in text area
@@ -175,12 +178,12 @@
 
 
 		  });
-				// generate json file
 
-		   $("#saveFile").click(function(event) {
+			// save json to file
+		  $("#saveFile").click(function(event) {
 		   	    var link = document.createElement('a');
 		   	    link.setAttribute('download', fileName);
-		   	    link.href = myModule.makeTextFile(jsonText);
+		   	    link.href = saveToFileModule.makeTextFile(jsonText);
 		   	    document.body.appendChild(link);
 
 		   	    // wait for the link to be added to the document
