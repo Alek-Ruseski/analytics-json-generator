@@ -20,79 +20,88 @@
 
 			<div class="form-group row">
 
-				<label for="AB_TestName" class="col-sm-3 col-form-label">AB Test Name</label>
+				<label for="AB_TestName" class="col-sm-2 col-form-label">AB Test Name</label>
 				<div class="col-sm-9">
 					<input type="text" class="form-control" id="ABTestName" name="AB_TestName" placeholder="ExampleTest">
 				</div>
 			</div>
 
+			<button  class="btn btn-primary mb-3" id="addParamButton">Add new parameter</button>
 
 			<div class="form-group mb-2" id="parameterList">
 
-				
+
 			</div>
 
-
 			<button class="btn btn-primary mb-3" id="generateJson">Generate json</button>
-			<button  class="btn btn-primary mb-3" id="addParamButton">Add new parameter</button>
+		</form>
 
+
+		<textarea class="w-100 overflow-auto" name="showArea" id="showArea" placeholder="Click the generate json button to see the json..." readonly rows="10"></textarea>
+		<div class="text-left">
+			<button class="btn btn-primary mb-3 text-left" id="saveFile">Save json to file</button>
+			<button class="btn btn-primary mb-3 text-left" id="copyJson" data-toggle="modal" data-target="#exampleModal">Copy json to clipboard</button>
+		</div>
+
+		<!-- template parameter -->
+		<form class="form-row d-none" id="template-parameter">
+			<div class="form-group mb-2">
+				<label for="parameterName" >Name</label>
+				<input type="text" class="form-control" id="parameterName" name="parameterName" placeholder="Parameter name">
+			</div>
+			<div class="form-group mx-3 mb-2">
+				<label for="parameterValue">Value</label>
+				<input type="text" class="form-control" id="parameterValue" name="parameterValue" placeholder="Parameter value">
+			</div>
+			<div class="form-group col-2">
+				<label for="parameterValueType">Type</label>
+				<select  name="parameterValueType" class="form-control">
+					<option value="bool">Bool</option>
+					<option value="int">Integer</option>
+					<option value="string" selected="">String</option>
+					<option value="float">Float</option>
+				</select>
+			</div>
+
+			<button type="button" class="close ml-4" aria-label="Close" name="delete" >
+				<span aria-hidden="true">&times;</span>
+			</button>
 
 		</form>
 
-	
-		<textarea class="container" name="jsonExample" id="jsonExample" placeholder="Click the generate json button to see the json..." readonly rows="10"></textarea>
-<div class="text-right">
-		<button class="btn btn-primary mb-3 text-right" id="saveFile">Save json to file</button>
-</div>
+		<!-- Modal as popup that user have copied the json-->
+		<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+		  <div class="modal-dialog" role="document">
+		    <div class="modal-content">
 
+		      <div class="modal-body text-center">
+		        JSON copied
+		      </div>
 
-
-		<!-- template parameter -->
-			<form class="form-row d-none" id="template-parameter">
-				<div class="form-group mb-2">
-					<label for="parameterName" >Name</label>
-					<input type="text" class="form-control" id="parameterName" name="parameterName" placeholder="Parameter name">
-				</div>
-				<div class="form-group mx-3 mb-2">
-					<label for="parameterValue">Value</label>
-					<input type="text" class="form-control" id="parameterValue" name="parameterValue" placeholder="Parameter value">
-				</div>
-				<div class="form-group col-2">
-					<label for="parameterValueType">Type</label>
-					<select  name="parameterValueType" class="form-control">
-						<option value="bool">Bool</option>
-						<option value="int">Integer</option>
-						<option value="string" selected="">String</option>
-						<option value="float">Float</option>
-					</select>
-				</div>
-
-					<button type="button" class="close ml-4" aria-label="Close" name="delete" >
-					  <span aria-hidden="true">&times;</span>
-					</button>
-
-			</form>
+		    </div>
+		  </div>
 		</div>
+	</div>
 
-		<!-- Optional JavaScript -->
-		<!-- jQuery first, then Popper.js, then Bootstrap JS -->
-		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-	</body>
-	<script>
-		let jsonText;
-		let fileName = "TestExample";
+	<!-- Optional JavaScript -->
+	<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+<script>
+	let jsonText;
+	let fileName = "TestExample";
 
-		var saveToFileModule = (function () {
-			var textFile = null,
-			  makeTextFile = function (text) {
-			    var data = new Blob([text], {type: 'application/json'});
+	var saveToFileModule = (function () {
+		var textFile = null,
+		makeTextFile = function (text) {
+			var data = new Blob([text], {type: 'application/json'});
 
 			    // If we are replacing a previously generated file we need to
 			    // manually revoke the object URL to avoid memory leaks.
 			    if (textFile !== null) {
-			      window.URL.revokeObjectURL(textFile);
+			    	window.URL.revokeObjectURL(textFile);
 			    }
 
 			    textFile = window.URL.createObjectURL(data);
@@ -169,30 +178,45 @@
 
 
 				// show in text area
-				$(jsonExample).val(jsonString);
+				$(showArea).val(jsonString);
 				
 				jsonText = jsonString;
 				fileName = testName.value != "" ? testName.value : "test";
 				// perform validation
-
-
-
-		  });
+			});
 
 			// save json to file
-		  $("#saveFile").click(function(event) {
-		   	    var link = document.createElement('a');
-		   	    link.setAttribute('download', fileName);
-		   	    link.href = saveToFileModule.makeTextFile(jsonText);
-		   	    document.body.appendChild(link);
+			$("#saveFile").click(function(event) {
+				var link = document.createElement('a');
+				link.setAttribute('download', fileName);
+				link.href = saveToFileModule.makeTextFile(jsonText);
+				document.body.appendChild(link);
 
 		   	    // wait for the link to be added to the document
 		   	    window.requestAnimationFrame(function () {
-		   	      var event = new MouseEvent('click');
-		   	      link.dispatchEvent(event);
-		   	      document.body.removeChild(link);
-		   			});
-		   });
+		   	    	var event = new MouseEvent('click');
+		   	    	link.dispatchEvent(event);
+		   	    	document.body.removeChild(link);
+		   	    });
+		   	  });
+
+			$("#copyJson").click(function(event) {
+				// event.stopPropagation();
+				event.preventDefault();
+
+				/* Select the text field */
+				showArea.select();
+				showArea.setSelectionRange(0, 99999); /* For mobile devices */
+
+				/* Copy the text inside the text field */
+				document.execCommand("copy");
+
+				/* Alert the copied text */
+				setTimeout(() => {
+					$(exampleModal).modal('toggle')
+				}, 2000);
+				// alert("Copied:\n" + showArea.value);
+   	  });
 
 		});
 	</script>
