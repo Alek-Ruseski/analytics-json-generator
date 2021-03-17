@@ -267,8 +267,9 @@
 		   	    	link.dispatchEvent(event);
 		   	    	document.body.removeChild(link);
 		   	    });
-		   	  });
+   	  });
 
+			/* copy json to file */
 			$("#copyJson").click(function(event) {
 				// event.stopPropagation();
 				event.preventDefault();
@@ -282,7 +283,7 @@
 
 				/* Alert the copied text */
 				setTimeout(() => {
-					$(exampleModal).modal('toggle')
+					$(exampleModal).modal('hide')
 				}, 2000);
 				// alert("Copied:\n" + showArea.value);
 			});
