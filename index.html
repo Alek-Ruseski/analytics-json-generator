@@ -132,26 +132,26 @@
 			  }
 			})();
 
-		let validate = function (){
+		let validate = function (value, valueType){
 			console.log();
 			let result = true;
-			let txt = this.find('[name=parameterValue]').val();
+			let txt = value;
 			let regex;
-			switch(this.find('[name=parameterValueType]').val()){
+			switch(valueType){
 				case "Bool":
-				  regex = /^[1|0]$/;
+				  regex = /^[1|0]{0,1}$/;
 					result = regex.test(txt);
 				break;
 				case "String":
-				  regex = /^[a-zA-Z]+[a-zA-Z0-9_]*$/;
+				  regex = /^([a-zA-Z]+[a-zA-Z0-9_]*){0,1}$/;
 					result = regex.test(txt);
 				break;
 				case "Int":
-				  regex = /^[\d]+$/;
+				  regex = /^([\d]+){0,1}$/;
 					result = regex.test(txt);
 				break;
 				case "Float":
-				  regex = /^[0-9]*(?:\.[0-9]*)?$/;
+				  regex = /^([0-9]*(?:\.[0-9]*)?){0,1}$/;
 					result = regex.test(txt);
 				break;
 				default:
@@ -159,11 +159,34 @@
 					result = regex.test(txt);
 				break;
 			}
+			return result;
+		}
+
+		let validateWrapper = function (validationImpl){
+			let value = this.find('[name=parameterValue]').val();
+			let valueType = this.find('[name=parameterValueType]').val();
+			let result = validationImpl(value, valueType);
 			if(!result){
+				// show that data is invalid
 				this.find('[name=parameterValue]').addClass('is-invalid');
+				// prevent user from generating invalid data
+				$("#generateJson").attr('disabled', 'true');
 			}
 			else{
 			  this.find('[name=parameterValue]').removeClass('is-invalid');	
+				$("#generateJson").removeAttr('disabled');
+			}
+		}
+
+		let deleteElement = function (event) {
+			event.stopPropagation();
+			event.preventDefault();
+
+			this.remove();
+
+			// hide parameters labels if no parameters are shown
+			if($('#parameterList').children('form').length < 1){
+				$(parameterLabels).addClass("d-none");
 			}
 		}
 
@@ -182,22 +205,11 @@
 				var newParam = $("[id=template-parameter]").clone(true).appendTo('#parameterList').removeClass('d-none').attr('id', '');				
 
 				// add validation
-				newParam.find('[name=parameterValue]').on('input',validate.bind(newParam));
-				newParam.find('[name=parameterValueType]').change(validate.bind(newParam));
-
+				newParam.find('[name=parameterValue]').on('input',validateWrapper.bind(newParam, validate));
+				newParam.find('[name=parameterValueType]').change(validateWrapper.bind(newParam, validate));
 
 				// functional delete button for row
-				newParam.children('[name=delete]').click(function(event) {
-					event.stopPropagation();
-					event.preventDefault();
-
-					newParam.remove();
-
-					// hide parameters labels if no parameters are shown
-					if($('#parameterList').children('form').length < 1){
-						$(parameterLabels).addClass("d-none");
-					}
-				});
+				newParam.children('[name=delete]').click(deleteElement.bind(newParam));
 
 				// show parameter labels
 				$(parameterLabels).removeClass("d-none");
@@ -242,15 +254,11 @@
 				var jsonString = JSON.stringify(jsonData, null, 2);
 				// console.log(jsonString);
 
-
 				// show in text area
 				$(showArea).val(jsonString);
 				
 				jsonText = jsonString;
 				fileName = testName.value != "" ? testName.value : "test";
-				
-				// perform validation
-
 
 			});
 
@@ -261,12 +269,12 @@
 				link.href = saveToFileModule.makeTextFile(jsonText);
 				document.body.appendChild(link);
 
-		   	    // wait for the link to be added to the document
-		   	    window.requestAnimationFrame(function () {
-		   	    	var event = new MouseEvent('click');
-		   	    	link.dispatchEvent(event);
-		   	    	document.body.removeChild(link);
-		   	    });
+   	    // wait for the link to be added to the document
+   	    window.requestAnimationFrame(function () {
+   	    	var event = new MouseEvent('click');
+   	    	link.dispatchEvent(event);
+   	    	document.body.removeChild(link);
+   	    });
    	  });
 
 			/* copy json to file */
